@@ -1,3 +1,14 @@
-# Ignore personal IDE configuration folders:
-.vs
-.vscode
+# Block everything:
+*
+# Allow directories:
+!*/
+# Allow text files:
+!*.txt
+!*.md
+# Allow source code:
+!*.c
+!*.cpp
+!*.h
+!*.hpp
+# Allow Makefiles:
+!*Makefile
