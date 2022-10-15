@@ -1,7 +1,12 @@
-#include "parsedCalculatorTokens.h"
+#include "parsedInformations.h"
 
 int main(int argc, char* argv[])
 {
-    struct parsedCalculatorTokens calculatorTokens = parseCalculatorTokens(argv[1]);
-    printParsedCalculatorTokens(calculatorTokens);
+    if (argc != 2)
+    {
+        printf("Usage: %s <input>");
+    }
+
+    struct parsedInformations calculatorTokens = parseCalculatorTokens(argv[1]);
+    printParsedInformations(calculatorTokens);
 }
