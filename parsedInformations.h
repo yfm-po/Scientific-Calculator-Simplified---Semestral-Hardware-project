@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #define MAX_DIGITS 16
 
-
 struct token 
 {
     enum type {NUMBER, OPERATOR, LEFT_PAREN, RIGHT_PAREN} type;

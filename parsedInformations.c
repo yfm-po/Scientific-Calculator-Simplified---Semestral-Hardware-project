@@ -7,6 +7,12 @@
 
 #include "parsedInformations.h"
 
+/**
+ * function is used to tokenizate the string input
+ * 
+ * @param {char*} input - The input string to parse
+ * @returns {struct parsedInformations} 
+ */
 struct parsedInformations parseCalculatorTokens(char* input)
 {
     struct parsedInformations CalculatorTokens;
@@ -83,6 +89,13 @@ struct parsedInformations parseCalculatorTokens(char* input)
     return CalculatorTokens;
 }
 
+
+/**
+ * function is used to print the parsed informations just for debugging purposes
+ * 
+ * @param {struct parsedInformations CalculatorTokens} CalculatorTokens - The parsed informations
+ * @returns {void}
+ */
 void printParsedInformations(struct parsedInformations CalculatorTokens)
 {
     for (int i = 0; i < CalculatorTokens.tokenCount; i++)
@@ -109,6 +122,10 @@ void printParsedInformations(struct parsedInformations CalculatorTokens)
     }
 }
 
+/**
+ * function is used to print a syntax error message 
+ * @returns {void}
+ */
 void syntaxError()
 {
     printf("Syntax Error");
