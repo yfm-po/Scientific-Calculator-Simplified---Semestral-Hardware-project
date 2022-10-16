@@ -36,11 +36,18 @@ struct parsedInformations parseCalculatorTokens(char* input)
             }
             i--;
         }
-        else if (input[i] == '+' || input[i] == '-' || input[i] == '*' || input[i] == '/')
+        else if (input[i] == '+' || input[i] == '-' || input[i] == '*' || input[i] == '/' || input[i] == '^' || input[i] == '√' || input[i] == '!')
         {
             CalculatorTokens.tokens[CalculatorTokens.tokenCount].type = OPERATOR;
             CalculatorTokens.tokens[CalculatorTokens.tokenCount].value.op = input[i];
             CalculatorTokens.tokenCount++;
+
+            if ((!isdigit(input[i + 1]) || input[i + 1] != ' '))
+            {
+                syntaxError();
+                CalculatorTokens.hasSyntaxError = true;
+                break;
+            }
         }
         else if (input[i] == '(')
         {
@@ -49,6 +56,13 @@ struct parsedInformations parseCalculatorTokens(char* input)
             CalculatorTokens.tokenCount++;
             CalculatorTokens.hasOpenParentheses = true;
             CalculatorTokens.openParenthesesCount++;
+
+            if (!isdigit(input[i + 1]) || input[i + 1] != '(')
+            {
+                syntaxError();
+                CalculatorTokens.hasSyntaxError = true;
+                break;
+            }
         }
         else if (input[i] == ')')
         {
@@ -57,6 +71,13 @@ struct parsedInformations parseCalculatorTokens(char* input)
             CalculatorTokens.tokenCount++;
             CalculatorTokens.hasCloseParentheses = true;
             CalculatorTokens.closeParenthesesCount++;
+
+            if (!isdigit(input[i + 1]) || input[i + 1] != ')')
+            {
+                syntaxError();
+                CalculatorTokens.hasSyntaxError = true;
+                break;
+            }
         }
         else if (input[i] == ' ')
         {
