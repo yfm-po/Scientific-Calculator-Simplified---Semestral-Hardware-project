@@ -7,6 +7,8 @@
 
 #include "parsedInformations.h"
 
+#define SQUARE_ROOT_ASCII (char)8730
+
 /**
  * function is used to tokenizate the string input
  * 
@@ -36,7 +38,7 @@ struct parsedInformations parseCalculatorTokens(char* input)
             }
             i--;
         }
-        else if (input[i] == '+' || input[i] == '-' || input[i] == '*' || input[i] == '/' || input[i] == '^' || input[i] == '√' || input[i] == '!')
+        else if (input[i] == '+' || input[i] == '-' || input[i] == '*' || input[i] == '/' || input[i] == '^' || input[i] == SQUARE_ROOT_ASCII || input[i] == '!')
         {
             CalculatorTokens.tokens[CalculatorTokens.tokenCount].type = OPERATOR;
             CalculatorTokens.tokens[CalculatorTokens.tokenCount].value.op = input[i];
