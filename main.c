@@ -1,4 +1,5 @@
 #include "parsedInformations.h"
+#include "calculator.h"
 
 int main(int argc, char* argv[])
 {
@@ -8,5 +9,5 @@ int main(int argc, char* argv[])
     }
 
     struct parsedInformations calculatorTokens = parseCalculatorTokens(argv[1]);
-    printParsedInformations(calculatorTokens);
+    double calc = calculateRecursively(calculatorTokens);
 }

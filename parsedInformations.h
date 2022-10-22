@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdbool.h>
 #define MAX_DIGITS 16
+#define SQUARE_ROOT_ASCII (char)8730
 
 struct token 
 {
