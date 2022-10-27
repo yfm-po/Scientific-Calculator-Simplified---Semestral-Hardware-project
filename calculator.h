@@ -1,3 +1,3 @@
-double calculateRecursively(struct parsedInformations parsedCalculatorTokens);
+double calculateResult(struct parsedInformations parsedCalculatorTokens);
 
 

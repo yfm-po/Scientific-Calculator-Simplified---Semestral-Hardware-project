@@ -9,5 +9,5 @@ int main(int argc, char* argv[])
     }
 
     struct parsedInformations calculatorTokens = parseCalculatorTokens(argv[1]);
-    double calc = calculateRecursively(calculatorTokens);
+    double calc = calculateResult(calculatorTokens);
 }

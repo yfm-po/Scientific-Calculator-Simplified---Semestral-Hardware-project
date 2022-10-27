@@ -1,6 +1,7 @@
 #include "parsedInformations.h"
 #include "calculator.h"
 #include <math.h>
+#include "lstack.h"
 
 double factorial(double n)
 {
@@ -14,124 +15,52 @@ double factorial(double n)
     }
 }
 
-
-
-double calculateRecursively(struct parsedInformations parsedCalculatorTokens)
+double calculateResult(struct parsedInformations parsedCalculatorTokens)
 {
+    LStack stack = CreateStack();
     double result = 0;
-    int i = 0;
-    bool throughFirstIteration = false;
-    
-    while (i < parsedCalculatorTokens.tokenCount)
+
+    for (int i = 0; i < parsedCalculatorTokens.tokenCount; i++)
     {
-        if (parsedCalculatorTokens.hasOpenParentheses && parsedCalculatorTokens.hasCloseParentheses)
+        if (parsedCalculatorTokens.tokens[i].type == NUMBER)
         {
-            while (parsedCalculatorTokens.tokens[i].type != LEFT_PAREN)
-            {
-                i++;
-            }
-            if (parsedCalculatorTokens.tokens[i].type == LEFT_PAREN)
-            {
-                double subresult = 0;
-                int j = i + 1;
-                while (j < parsedCalculatorTokens.tokenCount)
-                {
-                    if (parsedCalculatorTokens.tokens[j].type == RIGHT_PAREN)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        if (parsedCalculatorTokens.tokens[j].type == NUMBER)
-                        {
-                            subresult = parsedCalculatorTokens.tokens[j].value.number;
-                        }
-                        else if (parsedCalculatorTokens.tokens[j].type == OPERATOR)
-                        {
-                            if (parsedCalculatorTokens.tokens[j].value.op == '+')
-                            {
-                                subresult += parsedCalculatorTokens.tokens[j + 1].value.number;
-                            }
-                            else if (parsedCalculatorTokens.tokens[j].value.op == '-')
-                            {
-                                subresult -= parsedCalculatorTokens.tokens[j + 1].value.number;
-                            }
-                            else if (parsedCalculatorTokens.tokens[j].value.op == '*')
-                            {
-                                subresult *= parsedCalculatorTokens.tokens[j + 1].value.number;
-                            }
-                            else if (parsedCalculatorTokens.tokens[j].value.op == '/')
-                            {
-                                subresult /= parsedCalculatorTokens.tokens[j + 1].value.number;
-                            }
-                            else if (parsedCalculatorTokens.tokens[j].value.op == '^')
-                            {
-                                subresult = pow(subresult, parsedCalculatorTokens.tokens[j + 1].value.number);
-                            }
-                            else if (parsedCalculatorTokens.tokens[j].value.op == SQUARE_ROOT_ASCII)
-                            {
-                                subresult = sqrt(subresult);
-                            }
-                            else if (parsedCalculatorTokens.tokens[j].value.op == '!')
-                            {
-                                subresult = factorial(subresult);
-                            }
-                        }
-                    }
-                    j++;
-                }
-                result = subresult;
-                //i = j;
-            }
-            i++;
+            Push(parsedCalculatorTokens.tokens[i].value.number, stack);
         }
-        else
+        else if (parsedCalculatorTokens.tokens[i].type == OPERATOR)
         {
-            if (parsedCalculatorTokens.tokens[i].type == NUMBER)
+            double operand1 = TopAndPop(stack);
+            double operand2 = TopAndPop(stack);
+            switch (parsedCalculatorTokens.tokens[i].value.op)
             {
-                if (!throughFirstIteration)
-                {
-                    result = parsedCalculatorTokens.tokens[i].value.number;
-                    throughFirstIteration = true;
-                }
+            case '+':
+                result = operand1 + operand2;
+                break;
+            case '-':
+                result = operand2 - operand1;
+                break;
+            case '*':
+                result = operand1 * operand2;
+                break;
+            case '/':
+                result = operand2 / operand1;
+                break;
+            case '^':
+                result = pow(operand2, operand1);
+                break;
+            case SQUARE_ROOT_ASCII:
+                result = sqrt(operand1);
+                break;
+            case '!':
+                result = factorial(operand1);
+                break;
+            default:
+                break;
             }
-            else if (parsedCalculatorTokens.tokens[i].type == OPERATOR)
-            {
-                if (parsedCalculatorTokens.tokens[i].value.op == '*')
-                {
-                    result *= parsedCalculatorTokens.tokens[i + 1].value.number;
-                }
-                else if (parsedCalculatorTokens.tokens[i].value.op == '/')
-                {
-                    result /= parsedCalculatorTokens.tokens[i + 1].value.number;
-                }
-                else if (parsedCalculatorTokens.tokens[i].value.op == '+')
-                {
-                    result += parsedCalculatorTokens.tokens[i + 1].value.number;
-                }
-                else if (parsedCalculatorTokens.tokens[i].value.op == '-')
-                {
-                    result -= parsedCalculatorTokens.tokens[i + 1].value.number;
-                }
-                else if (parsedCalculatorTokens.tokens[i].value.op == '^')
-                {
-                    result = pow(result, parsedCalculatorTokens.tokens[i + 1].value.number);
-                }
-                else if (parsedCalculatorTokens.tokens[i].value.op == SQUARE_ROOT_ASCII)
-                {
-                    result = sqrt(result);
-                }
-                else if (parsedCalculatorTokens.tokens[i].value.op == '!')
-                {
-                    result = factorial(result);
-                }
-            }
-            i++;
+            Push(result, stack);
         }
     }
 
-    printf("%f\n", result);
-    return result;
+    return TopAndPop(stack);
 }
 
 
