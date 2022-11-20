@@ -15,6 +15,7 @@ bool hasSyntaxError(char *input)
         {
             close++;
         }
+        
         if (input[i] == '(')
         {
             if (input[i + 1] == ')')

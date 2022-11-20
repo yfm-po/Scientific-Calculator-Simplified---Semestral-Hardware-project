@@ -44,8 +44,8 @@ void setup()
 
 void loop() 
 {
-    char * expression = (char * ) calloc(MAX_EXPR_LEN, sizeof(char));
-    char * result = (char * ) calloc(MAX_EXPR_LEN, sizeof(char));
+    char *expression = (char *) calloc(MAX_EXPR_LEN, sizeof(char));
+    char *result = (char *) calloc(MAX_EXPR_LEN, sizeof(char));
     char key = keypad.getKey();
 
     int i = 0;
@@ -54,7 +54,6 @@ void loop()
         if (digitalRead(CHANGE_MODE) == HIGH) 
         {
             digitalWrite(CHANGE_MODE_LED, HIGH);
-            Serial.println("entered into change mode");
             if (key == '+')
             {
                 expression[i] = '(';
@@ -81,7 +80,6 @@ void loop()
         }
         if (key == 'C') 
         {
-            Serial.println("entered into C");
             if (i > 0) 
             {
                 i--;
@@ -92,7 +90,6 @@ void loop()
         } 
         else if (key != NO_KEY && key != 'C') 
         {
-            Serial.println("entered into else");
             expression[i] = key;
             i++;
             lcd_print_at(0, 0, expression);
@@ -100,8 +97,11 @@ void loop()
         }
         key = keypad.getKey();
     }
+
     lcd_print_at(1, 0, "=");
+
     float resultNumber = Evaulate(expression);
+
     dtostrf(resultNumber, 0, 2, result);
 
     if (hasSyntaxError(expression))
@@ -112,6 +112,9 @@ void loop()
     {
         lcd_print_at(1, 1, result);
     }
+    
+    free(expression);
+    free(result);
     
     key = keypad.getKey();
     while (key != 'C') 
