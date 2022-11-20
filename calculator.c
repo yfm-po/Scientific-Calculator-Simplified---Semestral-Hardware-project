@@ -25,42 +25,60 @@ double calculateResult(struct parsedInformations parsedCalculatorTokens)
         if (parsedCalculatorTokens.tokens[i].type == NUMBER)
         {
             Push(parsedCalculatorTokens.tokens[i].value.number, stack);
+            printf("found first number: ");
+            PrintStack(stack);
+            putchar('\n');
         }
-        else if (parsedCalculatorTokens.tokens[i].type == OPERATOR)
+        if (parsedCalculatorTokens.tokens[i].type == OPERATOR)
         {
             double operand1 = TopAndPop(stack);
-            double operand2 = TopAndPop(stack);
+            printf("found first operand: %c\n", operand1);
+            PrintStack(stack);
+            double operand2;
+            for (int j = i + 1; j < parsedCalculatorTokens.tokenCount; j++)
+            {
+                if (parsedCalculatorTokens.tokens[j].type == NUMBER)
+                {
+                    operand2 = parsedCalculatorTokens.tokens[j].value.number;
+                    printf("found second operand: %d\n", operand2);
+                    PrintStack(stack);
+                    operand2 = TopAndPop(stack);
+                    break;
+                }
+            }
             switch (parsedCalculatorTokens.tokens[i].value.op)
             {
-            case '+':
-                result = operand1 + operand2;
-                break;
-            case '-':
-                result = operand2 - operand1;
-                break;
-            case '*':
-                result = operand1 * operand2;
-                break;
-            case '/':
-                result = operand2 / operand1;
-                break;
-            case '^':
-                result = pow(operand2, operand1);
-                break;
-            case SQUARE_ROOT_ASCII:
-                result = sqrt(operand1);
-                break;
-            case '!':
-                result = factorial(operand1);
-                break;
-            default:
-                break;
+                case '+':
+                    result = operand1 + operand2;
+                    break;
+                case '-':
+                    result = operand2 - operand1;
+                    break;
+                case '*':
+                    result = operand1 * operand2;
+                    break;
+                case '/':
+                    result = operand2 / operand1;
+                    break;
+                case '^':
+                    result = pow(operand2, operand1);
+                    break;
+                case SQUARE_ROOT_ASCII:
+                    result = sqrt(operand1);
+                    break;
+                case '!':
+                    result = factorial(operand1);
+                    break;
+                default:
+                    break;
             }
             Push(result, stack);
         }
     }
 
-    return TopAndPop(stack);
+    result = TopAndPop(stack);
+
+    return result;
 }
 
 
