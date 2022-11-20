@@ -1,6 +1,7 @@
 #include <Keypad.h>
 #include "lcd.h"
 #include "Calculate.h"
+#include "SyntaxErrorHandler.h"
 #define MAX_EXPR_LEN 16
 
 #define CHANGE_MODE 3
@@ -102,9 +103,16 @@ void loop()
     lcd_print_at(1, 0, "=");
     float resultNumber = Evaulate(expression);
     dtostrf(resultNumber, 0, 2, result);
-    lcd_print_at(1, 1, result);
-    delay(2000);
 
+    if (hasSyntaxError(expression))
+    {
+        syntaxError();
+    }
+    else
+    {
+        lcd_print_at(1, 1, result);
+    }
+    
     key = keypad.getKey();
     while (key != 'C') 
     {

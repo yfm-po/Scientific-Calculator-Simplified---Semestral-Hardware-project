@@ -13,7 +13,8 @@ void lcd_init()
     lcd.begin(16, 2);
 }
 
-void lcd_clear() {
+void lcd_clear() 
+{
     lcd.clear();
 }
 
