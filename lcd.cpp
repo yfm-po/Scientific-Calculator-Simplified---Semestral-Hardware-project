@@ -26,6 +26,7 @@ void lcd_set_cursor(int y, int x)
 void lcd_print(char * text) 
 {
     lcd.print(text);
+    Serial.println(expression);
 }
 
 void lcd_print_at(int y, int x, char * text) 

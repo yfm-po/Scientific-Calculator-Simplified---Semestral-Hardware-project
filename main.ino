@@ -9,6 +9,8 @@
 #define LEFT_PARENTHESES_LED 2
 #define RIGHT_PARENTHESES_LED 13
 
+int leds[] = { LEFT_PARENTHESES_LED, RIGHT_PARENTHESES_LED };
+
 const byte ROWS = 4;
 const byte COLS = 4;
 
@@ -24,6 +26,7 @@ byte colPins[COLS] = {7, 6, 5, 4};
 
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
+//TODO: add buzzer, add easteregg, add more components
 void setup() 
 {
     lcd_init();
@@ -59,10 +62,7 @@ void loop()
                 expression[i] = '(';
                 i++;
                 lcd_print_at(0, 0, expression);
-                Serial.println(expression);
-                digitalWrite(LEFT_PARENTHESES_LED, HIGH);
-                delay(500);
-                digitalWrite(LEFT_PARENTHESES_LED, LOW);
+                blinkWithLed(leds, 0);
                 key = NO_KEY;
             } 
             else if (key == '-') 
@@ -70,11 +70,15 @@ void loop()
                 expression[i] = ')';
                 i++;
                 lcd_print_at(0, 0, expression);
-                Serial.println(expression);
-                digitalWrite(RIGHT_PARENTHESES_LED, HIGH);
-                delay(500);
-                digitalWrite(RIGHT_PARENTHESES_LED, LOW);
+                blinkWithLed(leds, 1);
                 key = NO_KEY;
+            }
+            else if (key == 'C')
+            {
+                for (int j = 0; j < MAX_EXPR_LEN; j++)expression[j] = '\0';
+                i = 0;
+                lcd_clear();
+                blinkWithLeds(leds, 2);
             }
             digitalWrite(CHANGE_MODE_LED, LOW);
         }
@@ -85,7 +89,6 @@ void loop()
                 i--;
                 expression[i] = '\0';
                 lcd_print_at(0, i, " ");
-                Serial.println(expression);
             }
         } 
         else if (key != NO_KEY && key != 'C') 
@@ -93,12 +96,9 @@ void loop()
             expression[i] = key;
             i++;
             lcd_print_at(0, 0, expression);
-            Serial.println(expression);
         }
         key = keypad.getKey();
     }
-
-    lcd_print_at(1, 0, "=");
 
     float resultNumber = Evaulate(expression);
 
@@ -108,18 +108,29 @@ void loop()
     {
         syntaxError();
     }
-    else
+    else if (strcmp(expression, "") || strcmp(expression, NULL))
     {
+        lcd_print_at(1, 0, "=");
         lcd_print_at(1, 1, result);
+        do{ key = keypad.getKey(); } while (key != 'C');
     }
     
     free(expression);
     free(result);
-    
-    key = keypad.getKey();
-    while (key != 'C') 
-    {
-        key = keypad.getKey();
-    }
+
     lcd_clear();
+}
+
+void blinkWithLed(int *leds, int ledIndex)
+{
+    digitalWrite(leds[ledIndex], HIGH);
+    delay(500);
+    digitalWrite(leds[ledIndex], LOW);
+}
+
+void blinkWithLeds(int *leds, int ledsCount)
+{
+    for (int i = 0; i < ledsCount; i++) digitalWrite(leds[i], HIGH);
+    delay(500);
+    for (int i = 0; i < ledsCount; i++) digitalWrite(leds[i], LOW);
 }
