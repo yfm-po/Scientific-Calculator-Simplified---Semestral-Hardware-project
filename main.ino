@@ -20,7 +20,7 @@ char keys[ROWS][COLS] = {
 };
 
 byte rowPins[ROWS] = {11, 10, 9, 8};
-byte colPins[COLS] = {7, 6, 5, 4};;
+byte colPins[COLS] = {7, 6, 5, 4};
 
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 

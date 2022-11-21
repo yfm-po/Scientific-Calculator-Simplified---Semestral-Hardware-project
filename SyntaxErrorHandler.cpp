@@ -39,6 +39,11 @@ bool hasSyntaxError(char *input)
                 return true;
             }
         }
+
+        if ((input[i] == '*' && input[i + 2] == '/') || (input[i] == '/' && input[i + 2] == '*'))
+        {
+            return true;
+        }
     }
     if (open != close)
     {
