@@ -3,11 +3,16 @@
 #include "Calculate.h"
 #include "SyntaxErrorHandler.h"
 #define MAX_EXPR_LEN 16
+#define HISTORY_SIZE 10
 
 #define CHANGE_MODE 3
 #define CHANGE_MODE_LED 12
 #define LEFT_PARENTHESES_LED 2
 #define RIGHT_PARENTHESES_LED 13
+
+int historyIndex = 0;
+char** expressionHistory = calloc(HISTORY_SIZE, sizeof(char*));
+char** resultHistory = calloc(HISTORY_SIZE, sizeof(char*));
 
 int leds[] = { LEFT_PARENTHESES_LED, RIGHT_PARENTHESES_LED };
 
@@ -26,7 +31,8 @@ byte colPins[COLS] = {7, 6, 5, 4};
 
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
-//TODO: add buzzer, add easteregg, add more components
+//TODO: add buzzer, add easteregg, add more components, 
+//add history, add deleting char by char after getting the result, add cursor
 void setup() 
 {
     lcd_init();
@@ -36,6 +42,12 @@ void setup()
     pinMode(LEFT_PARENTHESES_LED, OUTPUT);
     pinMode(RIGHT_PARENTHESES_LED, OUTPUT);
 
+    for (int i = 0; i < HISTORY_SIZE; i++)
+    {
+      expressionHistory[i] = calloc(MAX_EXPR_LEN, sizeof(char));
+      resultHistory[i] = calloc(MAX_EXPR_LEN, sizeof(char));
+    }
+    
     lcd_print_at(0, 0, "Simple but cool");
     lcd_print_at(1, 0, "Calculator");
     delay(2000);
@@ -49,15 +61,44 @@ void loop()
 {
     char *expression = (char *) calloc(MAX_EXPR_LEN, sizeof(char));
     char *result = (char *) calloc(MAX_EXPR_LEN, sizeof(char));
+    char* historyIndexChar = calloc(1, sizeof(char));
+    int historySize = sizeof(expressionHistory)/sizeof(expressionHistory[0]);
+    
     char key = keypad.getKey();
-
     int i = 0;
     while (key != '=' && i < MAX_EXPR_LEN) 
     {
         if (digitalRead(CHANGE_MODE) == HIGH) 
         {
             digitalWrite(CHANGE_MODE_LED, HIGH);
-            if (key == '+')
+            if (key == '/')
+            {
+                while (digitalRead(CHANGE_MODE) == HIGH && historySize > 0)
+                {
+                    lcd_clear();
+                    lcd_print_at(0, 0, "Enter index");
+                    lcd_print_at(1, 0, "between 0 and");
+                    lcd_print_at(1, 14, itoa(historySize, historyIndexChar, 10));
+
+                    key = NO_KEY;
+                    while ((atoi(key) < 0 || atoi(key) > historySize) || key == NO_KEY)
+                    {
+                        key = keypad.getKey();
+                    }
+    
+                    lcd_clear();
+                    lcd_print_at(0, 0, expressionHistory[atoi(key)]);
+                    lcd_print_at(1, 0, resultHistory[atoi(key)]);
+                    
+                    key = NO_KEY;
+                    while (key != 'C')
+                    {
+                        key = keypad.getKey();
+                    }
+                    lcd_clear();
+                }
+            }
+            else if (key == '+')
             {
                 expression[i] = '(';
                 i++;
@@ -75,14 +116,14 @@ void loop()
             }
             else if (key == 'C')
             {
-                for (int j = 0; j < MAX_EXPR_LEN; j++)expression[j] = '\0';
+                for (int j = 0; j < MAX_EXPR_LEN; j++) expression[j] = '\0';
                 i = 0;
                 lcd_clear();
                 blinkWithLeds(leds, 2);
             }
             digitalWrite(CHANGE_MODE_LED, LOW);
         }
-        if (key == 'C') 
+        else if (key == 'C') 
         {
             if (i > 0) 
             {
@@ -91,7 +132,7 @@ void loop()
                 lcd_print_at(0, i, " ");
             }
         } 
-        else if (key != NO_KEY && key != 'C') 
+        else if (key != NO_KEY && key != 'C')
         {
             expression[i] = key;
             i++;
@@ -104,20 +145,27 @@ void loop()
 
     dtostrf(resultNumber, 0, 2, result);
 
+    strcpy(expressionHistory[historyIndex], expression);
+    strcpy(resultHistory[historyIndex], result);
+    historyIndex++;
+    
     if (hasSyntaxError(expression))
     {
         syntaxError();
+        waitForKeypress(key);
+        lcd_clear();
+        return;
     }
-    else if (strcmp(expression, "") || strcmp(expression, NULL))
+    else if (strcmp(expression, "") && strcmp(expression, NULL))
     {
         lcd_print_at(1, 0, "=");
         lcd_print_at(1, 1, result);
-        do{ key = keypad.getKey(); } while (key != 'C');
+        waitForKeypress(key);
+        lcd_clear();
     }
     
     free(expression);
     free(result);
-
     lcd_clear();
 }
 
@@ -133,4 +181,10 @@ void blinkWithLeds(int *leds, int ledsCount)
     for (int i = 0; i < ledsCount; i++) digitalWrite(leds[i], HIGH);
     delay(500);
     for (int i = 0; i < ledsCount; i++) digitalWrite(leds[i], LOW);
+}
+
+void waitForKeypress(char key)
+{
+    key = keypad.getKey(); 
+    while (key != 'C') key = keypad.getKey();
 }
