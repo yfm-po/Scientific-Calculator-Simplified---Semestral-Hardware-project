@@ -10,6 +10,7 @@
 #define LEFT_PARENTHESES_LED 2
 #define RIGHT_PARENTHESES_LED 13
 
+#define TOINT(char) (char - '0')
 #define CURSOR_POINTER "^"
 
 int historyIndex;
@@ -105,9 +106,9 @@ void loop()
                         }
                         
                         lcd_clear();
-                        lcd_print_at(0, 0, expressionHistory[key - '0']);
+                        lcd_print_at(0, 0, expressionHistory[TOINT(key)]);
                         lcd_print_at(1, 0, "=");
-                        lcd_print_at(1, 1, resultHistory[key - '0']);
+                        lcd_print_at(1, 1, resultHistory[TOINT(key)]);
                         
                         key = NO_KEY;
                         while (key != 'C')
