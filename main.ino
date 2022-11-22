@@ -76,26 +76,42 @@ void loop()
                 while (digitalRead(CHANGE_MODE) == HIGH && historySize > 0)
                 {
                     lcd_clear();
-                    lcd_print_at(0, 0, "Enter index");
-                    lcd_print_at(1, 0, "between 0 and");
-                    lcd_print_at(1, 14, itoa(historySize, historyIndexChar, 10));
-
-                    key = NO_KEY;
-                    while ((atoi(key) < 0 || atoi(key) > historySize) || key == NO_KEY)
+                    if (historySize == 1)
                     {
-                        key = keypad.getKey();
+                        lcd_clear();
+                        lcd_print_at(0, 0, expressionHistory[0]);
+                        lcd_print_at(1, 0, resultHistory[0]);
+                        
+                        key = NO_KEY;
+                        while (key != 'C')
+                        {
+                            key = keypad.getKey();
+                        }
+                        lcd_clear();
                     }
+                    else
+                    {
+                        lcd_print_at(0, 0, "Enter index");
+                        lcd_print_at(1, 0, "between 0 and");
+                        lcd_print_at(1, 14, itoa(historySize - 1, historyIndexChar, 10));
     
-                    lcd_clear();
-                    lcd_print_at(0, 0, expressionHistory[atoi(key)]);
-                    lcd_print_at(1, 0, resultHistory[atoi(key)]);
-                    
-                    key = NO_KEY;
-                    while (key != 'C')
-                    {
-                        key = keypad.getKey();
+                        key = NO_KEY;
+                        while ((atoi(key) < 0 || atoi(key) > historySize - 1) || key == NO_KEY)
+                        {
+                            key = keypad.getKey();
+                        }
+        
+                        lcd_clear();
+                        lcd_print_at(0, 0, expressionHistory[atoi(key)]);
+                        lcd_print_at(1, 0, resultHistory[atoi(key)]);
+                        
+                        key = NO_KEY;
+                        while (key != 'C')
+                        {
+                            key = keypad.getKey();
+                        }
+                        lcd_clear();
                     }
-                    lcd_clear();
                 }
             }
             else if (key == '+')
