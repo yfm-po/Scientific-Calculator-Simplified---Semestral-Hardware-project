@@ -1,7 +1,9 @@
-#ifndef EVAL_EXPR_H
-#define EVAL_EXPR_H
+#ifndef CALCULATE_H
+#define CALCULATE_H
+
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 float cursorMover(char **str);
 int  isBlank(char c);

@@ -1,9 +1,6 @@
 #include "Calculate.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-int isBlank(char c) 
+int isBlank(char c)
 {
     return (c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r' || c == ' ');
 }

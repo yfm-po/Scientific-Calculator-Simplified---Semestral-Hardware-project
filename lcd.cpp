@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
+#include <Keypad.h>
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
@@ -26,7 +27,6 @@ void lcd_set_cursor(int y, int x)
 void lcd_print(char * text) 
 {
     lcd.print(text);
-    Serial.println(expression);
 }
 
 void lcd_print_at(int y, int x, char * text) 
