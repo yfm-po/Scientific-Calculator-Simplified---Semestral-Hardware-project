@@ -14,8 +14,8 @@
 #define CURSOR_POINTER "^"
 
 int historyIndex;
-char** expressionHistory = calloc(HISTORY_SIZE, sizeof(char*));
-char** resultHistory = calloc(HISTORY_SIZE, sizeof(char*));
+char** expressionHistory = (char **) calloc(HISTORY_SIZE, sizeof(char*));
+char** resultHistory = (char **) calloc(HISTORY_SIZE, sizeof(char*));
 
 int leds[] = { LEFT_PARENTHESES_LED, RIGHT_PARENTHESES_LED };
 
@@ -47,16 +47,18 @@ void setup()
     historyIndex = 0;
     for (int i = 0; i < HISTORY_SIZE; i++)
     {
-      expressionHistory[i] = calloc(MAX_EXPR_LEN, sizeof(char));
-      resultHistory[i] = calloc(MAX_EXPR_LEN, sizeof(char));
+      expressionHistory[i] = (char *) calloc(MAX_EXPR_LEN, sizeof(char));
+      resultHistory[i] = (char *) calloc(MAX_EXPR_LEN, sizeof(char));
     }
     
-    lcd_print_at(0, 0, "Simple but cool");
-    lcd_print_at(1, 0, "Calculator");
+    lcd_print_at(0, 0, "Turning on...");
+    delay(850);
+    lcd_clear();
+    lcd_print_at(1, 0, "Please wait...");
     delay(2000);
     lcd_clear();
     lcd_print_at(0, 0, "Enter expression");
-    delay(2000);
+    delay(1500);
     lcd_clear();
     lcd_print_at(1, 0, CURSOR_POINTER);
 }
@@ -65,20 +67,22 @@ void loop()
 {
     char *expression = (char *) calloc(MAX_EXPR_LEN, sizeof(char));
     char *result = (char *) calloc(MAX_EXPR_LEN, sizeof(char));
-    char* historyIndexChar = calloc(1, sizeof(char));
+    char *historyIndexChar = (char *) calloc(1, sizeof(char));
     
     char key = keypad.getKey();
     int i = 0;
     while (key != '=' && i < MAX_EXPR_LEN)
     {
-        if (digitalRead(CHANGE_MODE) == HIGH) 
+        if (digitalRead(CHANGE_MODE) == HIGH)
         {
             digitalWrite(CHANGE_MODE_LED, HIGH);
             if (key == '/')
             {
+                lcd_print_at(0, 0, "Entered history");
+                delay(850);
+                lcd_clear();
                 while (digitalRead(CHANGE_MODE) == HIGH && historyIndex > 0)
                 {
-                    lcd_clear();
                     if (historyIndex == 1)
                     {
                         lcd_clear();
@@ -100,7 +104,7 @@ void loop()
                         lcd_print_at(1, 14, itoa(historyIndex - 1, historyIndexChar, 10));
     
                         key = NO_KEY;
-                        while ((atoi(key) < 0 || atoi(key) > historyIndex - 1) || key == NO_KEY)
+                        while ((TOINT(key) < 0 || TOINT(key) > historyIndex - 1) || key == NO_KEY)
                         {
                             key = keypad.getKey();
                         }
@@ -172,12 +176,15 @@ void loop()
     }
 
     float resultNumber = Evaulate(expression);
-
+    
     dtostrf(resultNumber, 0, 2, result);
 
-    strcpy(expressionHistory[historyIndex], expression);
-    strcpy(resultHistory[historyIndex], result);
-    historyIndex++;
+    if (expression != NULL && strcmp(expression, ""))
+    {
+        strcpy(expressionHistory[historyIndex], expression);
+        strcpy(resultHistory[historyIndex], result);
+        historyIndex++;
+    }
     
     if (hasSyntaxError(expression))
     {
@@ -186,8 +193,9 @@ void loop()
         lcd_clear();
         return;
     }
-    else if (strcmp(expression, "") || strcmp(expression, NULL))
+    else if (expression != NULL && strcmp(expression, ""))
     {
+        lcd_print_at(1, 0, "                ");
         lcd_print_at(1, 0, "=");
         lcd_print_at(1, 1, result);
         waitForKeypress(key);
