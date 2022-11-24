@@ -18,7 +18,7 @@ int historyIndex;
 char** expressionHistory = (char **) calloc(HISTORY_SIZE, sizeof(char*));
 char** resultHistory = (char **) calloc(HISTORY_SIZE, sizeof(char*));
 
-int leds[] = { LEFT_PARENTHESES_LED, RIGHT_PARENTHESES_LED };
+int leds[] = { RIGHT_PARENTHESES_LED, LEFT_PARENTHESES_LED, CHANGE_MODE_LED };
 
 const byte ROWS = 4;
 const byte COLS = 4;
@@ -200,6 +200,7 @@ void loop()
     if (hasSyntaxError(expression))
     {
         syntaxError();
+        syntaxErrorBlinking(leds, 3);
         waitForKeypress(key, keypad);
         lcd_clear();
         return;
@@ -209,6 +210,7 @@ void loop()
         lcd_print_at(1, 0, "                ");
         lcd_print_at(1, 0, "=");
         lcd_print_at(1, 1, result);
+        FinisherBlinking(leds, 3);
         waitForKeypress(key, keypad);
         lcd_clear();
     }

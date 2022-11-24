@@ -13,5 +13,7 @@ void waitForKeypress(char key, Keypad keypad);
 void loadingScreen();
 void animateLoadingDots(int row, int startIndex);
 void showHistoryElementBasedOnIndex(char **expressionHistory, char **resultHistory, int index);
+void FinisherBlinking(int *leds, int ledsCount);
+void syntaxErrorBlinking(int *leds, int ledsCount);
 
 #endif

@@ -70,3 +70,45 @@ void showHistoryElementBasedOnIndex(char **expressionHistory, char **resultHisto
         lcd_print_at(1, 0, resultHistory[index]);
     }
 }
+
+void FinisherBlinking(int *leds, int ledsCount)
+{
+    for (int i = 0; i < ledsCount; i++)
+    {
+        digitalWrite(leds[i], HIGH);
+        tone(BUZZER, 5000, 100);
+        delay(100);
+        digitalWrite(leds[i], LOW);
+        delay(100);
+    }
+
+    for (int i = ledsCount - 1; i >= 0; i--)
+    {
+        digitalWrite(leds[i], HIGH);
+        tone(BUZZER, 5000, 100);
+        delay(100);
+        digitalWrite(leds[i], LOW);
+        delay(100);
+    }
+}
+
+void syntaxErrorBlinking(int *leds, int ledsCount)
+{
+    for (int i = 0; i < ledsCount; i++)
+    {
+        digitalWrite(leds[i], HIGH);
+        tone(BUZZER, 5000, 100);
+        delay(500);
+        digitalWrite(leds[i], LOW);
+        delay(500);
+    }
+
+    for (int i = ledsCount - 1; i >= 0; i--)
+    {
+        digitalWrite(leds[i], HIGH);
+        tone(BUZZER, 5000, 100);
+        delay(500);
+        digitalWrite(leds[i], LOW);
+        delay(500);
+    }
+}
