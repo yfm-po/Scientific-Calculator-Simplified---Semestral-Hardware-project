@@ -121,6 +121,17 @@ void loop()
                 }
                 return;
             }
+            else if (key == '*')
+            {
+                expression[i] = ' ';
+                i++;
+                lcd_print_at(1, 0, "                ");
+                lcd_print_at(1, i, CURSOR_POINTER);
+                lcd_print_at(0, 0, expression);
+                tone(BUZZER, 5000, 100);
+                blinkWithLed(leds, 0);
+                key = NO_KEY;
+            }
             else if (key == '+')
             {
                 expression[i] = '(';
