@@ -35,6 +35,8 @@ byte colPins[COLS] = {7, 6, 5, 4};
 
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
+//TODO: add bomb defuse game mode (with timer) to CHANGE_MODE + 123 combination where you get random 4 digit number and you have to guess it in 30 seconds,
+//if you guess it, you have defused the bomb, else it blows up with blinking very fast leds and buzzer
 void setup()
 {
     lcd_init();

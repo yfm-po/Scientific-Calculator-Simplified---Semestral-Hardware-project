@@ -25,7 +25,7 @@ void loadingScreen()
     lcd_print_at(0, 0, "Turning on");
     animateLoadingDots(0, 9);
     
-    delay(500);
+    delay(200);
     lcd_clear();
 
     lcd_print_at(1, 0, "Plase wait");        
@@ -33,7 +33,7 @@ void loadingScreen()
 
     lcd_clear();
     lcd_print_at(0, 0, "Enter expression");
-    delay(1500);
+    delay(500);
     lcd_clear();
 }
 
@@ -45,7 +45,7 @@ void animateLoadingDots(int row, int startIndex)
         {
             lcd_print_at(row, startIndex + i, ".");
             tone(BUZZER, 5000, 100);
-            delay(500);
+            delay(200);
         }
 
         for (int i = 1; i <= 3; i++)
