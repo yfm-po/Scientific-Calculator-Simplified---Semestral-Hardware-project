@@ -35,8 +35,6 @@ byte colPins[COLS] = {7, 6, 5, 4};
 
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
-//TODO: add bomb defuse game mode (with timer) to CHANGE_MODE + 123 combination where you get random 4 digit number and you have to guess it in 30 seconds,
-//if you guess it, you have defused the bomb, else it blows up with blinking very fast leds and buzzer
 void setup()
 {
     lcd_init();
@@ -46,6 +44,7 @@ void setup()
     pinMode(LEFT_PARENTHESES_LED, OUTPUT);
     pinMode(RIGHT_PARENTHESES_LED, OUTPUT);
     pinMode(BUZZER, OUTPUT);
+    randomSeed(analogRead(0));
 
     historyIndex = 0;
     for (int i = 0; i < HISTORY_SIZE; i++)
@@ -72,7 +71,7 @@ void loop()
         {
             digitalWrite(CHANGE_MODE_LED, HIGH);
             
-            if (key == '1' || key == '2' || key == '3')
+            if (key == '3')
             {
                 bombDefuseGame();
             }
@@ -239,6 +238,7 @@ void loop()
     lcd_clear();
 }
 
+
 void bombDefuseGame()
 {
     lcd_clear();
@@ -273,57 +273,84 @@ void bombDefuseGame()
 
     char defKey;
 
-    for (int i = 0; i < strlen(code); i++) code[i] = TOINT(random(0, 9));
+    for (int i = 0; i < 4; i++) code[i] = (char)(random(0, 9) + '0');
+    code[4] = '\0';
+    
     Serial.println(code);
 
-    for (int i = 0; i < strlen(input); i++) input[i] = '*';
+    strcpy(input, "****");
     Serial.println(input);
 
     int guessIndex = 0;
     int countDelay = 1000;
-    for (int i = 30; i >= 0; i--)
+
+    int i;
+    for (i = 60; i >= 0; i--)
     {
+        if (i == 1)
+        {
+            lcd_clear();
+            lcd_print_at(0, 0, "Time's up!");
+            lcd_print_at(1, 0, "You lose!");
+            delay(1000);
+            lcd_clear();
+            lcd_print_at(0, 0, "The code was");
+            lcd_print_at(1, 0, code);
+            delay(1000);
+            lcd_clear();
+            break;
+        }
+
         lcd_print_at(0, 0, "guess: ");
         lcd_print_at(0, 8, input);
         lcd_print_at(1, 0, "Time left: ");
-        lcd_print_at(1, 11, itoa(i, timeLeft, 10));
+
+        if (i >= 10) lcd_print_at(1, 11, itoa(i, timeLeft, 10));
+        else
+        {
+            lcd_print_at(1, 11, "0");
+            lcd_print_at(1, 12, itoa(i, timeLeft, 10));
+        }
+
         digitalWrite(CHANGE_MODE_LED, HIGH);
         tone(BUZZER, 5000, 100);
         delay(countDelay);
-        countDelay -= 33.33;
+        countDelay -= 16.66;
         digitalWrite(CHANGE_MODE_LED, LOW);
-        //get input from user to guess the code
+
         defKey = keypad.getKey();
-        if (defKey != NO_KEY && defKey != 'C')
+        if (defKey != NO_KEY && (TOINT(defKey) >= 0 && TOINT(defKey) <= 9))
         {
             input[guessIndex] = defKey;
             guessIndex++;
+            Serial.println(input);
+            Serial.println(guessIndex);
+            Serial.println(code);
             tone(BUZZER, 5000, 100);
-        }
-        else if (defKey == 'C')
-        {
-            if (guessIndex > 0)
-            {
-                input[guessIndex] = '*';
-                guessIndex--;
-                tone(BUZZER, 5000, 100);
-            }
         }
 
         if (guessIndex == strlen(code))
         {
+            lcd_clear();
+            lcd_print_at(0, 0, "guess: ");
+            lcd_print_at(0, 8, input);
             if (!strcmp(input, code))
             {
                 lcd_clear();
+                digitalWrite(CHANGE_MODE_LED, LOW);
                 lcd_print_at(0, 0, "Bomb has been");
                 lcd_print_at(1, 0, "defused!");
                 delay(1000);
                 lcd_clear();
                 lcd_print_at(0, 0, "You are");
                 lcd_print_at(1, 0, "awesome!");
+                digitalWrite(LEFT_PARENTHESES_LED, HIGH);
+                digitalWrite(RIGHT_PARENTHESES_LED, HIGH);
+                tone(BUZZER, 2500, 2000);
+                digitalWrite(LEFT_PARENTHESES_LED, LOW);
+                digitalWrite(RIGHT_PARENTHESES_LED, LOW);
                 delay(1000);
                 lcd_clear();
-                digitalWrite(CHANGE_MODE_LED, LOW);
                 return;
             }
             else
@@ -333,16 +360,18 @@ void bombDefuseGame()
                 lcd_print_at(1, 0, "You lose!");
                 delay(1000);
                 lcd_clear();
-                lcd_print_at(0, 0, "Bomb has");
-                lcd_print_at(1, 0, "exploded!");
+                lcd_print_at(0, 0, "The code was");
+                lcd_print_at(1, 0, code);
                 delay(1000);
                 lcd_clear();
-                digitalWrite(CHANGE_MODE_LED, LOW);
-                return;
+                break;
             }
         }
     }
-
-    digitalWrite(CHANGE_MODE_LED, LOW);
-    return;
+    tone(BUZZER, 5000, 2000);
+    delay(1000);
+    lcd_clear();
+    free(code);
+    free(input);
+    free(timeLeft);
 }
