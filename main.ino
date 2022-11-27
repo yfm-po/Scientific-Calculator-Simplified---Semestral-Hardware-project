@@ -71,6 +71,12 @@ void loop()
         if (digitalRead(CHANGE_MODE) == HIGH)
         {
             digitalWrite(CHANGE_MODE_LED, HIGH);
+            
+            if (key == '1' || key == '2' || key == '3')
+            {
+                bombDefuseGame();
+            }
+
             if (key == '/')
             {
                 tone(BUZZER, 5000, 100);
@@ -231,4 +237,112 @@ void loop()
     free(expression);
     free(result);
     lcd_clear();
+}
+
+void bombDefuseGame()
+{
+    lcd_clear();
+    lcd_print_at(0, 0, "Well, this is");
+    lcd_print_at(1, 0, "not just a");
+    delay(1000);
+    lcd_clear();
+
+    lcd_print_at(0, 0, "calculator!");
+    lcd_print_at(1, 0, "It's a bomb!");
+    delay(1000);
+    lcd_clear();
+
+    lcd_print_at(0, 0, "You have to");
+    lcd_print_at(1, 0, "defuse it!");
+    delay(1000);
+    lcd_clear();
+
+    lcd_print_at(0, 0, "You have 1");
+    lcd_print_at(1, 0, "chance!");
+    delay(1000);
+    lcd_clear();
+
+    char* code = calloc(4, sizeof(char));
+    for (int i = 0; i < 4; i++) code[i] = '\0';
+
+    char* input = calloc(4, sizeof(char));
+    for (int i = 0; i < 4; i++) input[i] = '\0';
+
+    char* timeLeft = calloc(2, sizeof(char));
+    for (int i = 0; i < 2; i++) timeLeft[i] = '\0';
+
+    char defKey;
+
+    for (int i = 0; i < strlen(code); i++) code[i] = TOINT(random(0, 9));
+    Serial.println(code);
+
+    for (int i = 0; i < strlen(input); i++) input[i] = '*';
+    Serial.println(input);
+
+    int guessIndex = 0;
+    int countDelay = 1000;
+    for (int i = 30; i >= 0; i--)
+    {
+        lcd_print_at(0, 0, "guess: ");
+        lcd_print_at(0, 8, input);
+        lcd_print_at(1, 0, "Time left: ");
+        lcd_print_at(1, 11, itoa(i, timeLeft, 10));
+        digitalWrite(CHANGE_MODE_LED, HIGH);
+        tone(BUZZER, 5000, 100);
+        delay(countDelay);
+        countDelay -= 33.33;
+        digitalWrite(CHANGE_MODE_LED, LOW);
+        //get input from user to guess the code
+        defKey = keypad.getKey();
+        if (defKey != NO_KEY && defKey != 'C')
+        {
+            input[guessIndex] = defKey;
+            guessIndex++;
+            tone(BUZZER, 5000, 100);
+        }
+        else if (defKey == 'C')
+        {
+            if (guessIndex > 0)
+            {
+                input[guessIndex] = '*';
+                guessIndex--;
+                tone(BUZZER, 5000, 100);
+            }
+        }
+
+        if (guessIndex == strlen(code))
+        {
+            if (!strcmp(input, code))
+            {
+                lcd_clear();
+                lcd_print_at(0, 0, "Bomb has been");
+                lcd_print_at(1, 0, "defused!");
+                delay(1000);
+                lcd_clear();
+                lcd_print_at(0, 0, "You are");
+                lcd_print_at(1, 0, "awesome!");
+                delay(1000);
+                lcd_clear();
+                digitalWrite(CHANGE_MODE_LED, LOW);
+                return;
+            }
+            else
+            {
+                lcd_clear();
+                lcd_print_at(0, 0, "Wrong code!");
+                lcd_print_at(1, 0, "You lose!");
+                delay(1000);
+                lcd_clear();
+                lcd_print_at(0, 0, "Bomb has");
+                lcd_print_at(1, 0, "exploded!");
+                delay(1000);
+                lcd_clear();
+                digitalWrite(CHANGE_MODE_LED, LOW);
+                return;
+            }
+        }
+    }
+
+    digitalWrite(CHANGE_MODE_LED, LOW);
+    return;
 }
