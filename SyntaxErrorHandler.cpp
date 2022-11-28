@@ -1,6 +1,7 @@
 #include "SyntaxErrorHandler.h"
 #include "SyntaxErrorHandler.h"
 
+//funkcia na kontrolu syntaxe vyrazu
 bool hasSyntaxError(char *input)
 {
     int open = 0;
@@ -52,6 +53,7 @@ bool hasSyntaxError(char *input)
     return false;
 }
 
+//funkcia na vypis chybovej hlasky
 void syntaxError()
 {
     lcd_print_at(1, 0, "Syntax Error!");

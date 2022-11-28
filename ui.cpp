@@ -1,5 +1,6 @@
 #include "ui.h"
 
+//funkcia na blinknutie LED
 void blinkWithLed(int *leds, int ledIndex)
 {
     digitalWrite(leds[ledIndex], HIGH);
@@ -7,6 +8,7 @@ void blinkWithLed(int *leds, int ledIndex)
     digitalWrite(leds[ledIndex], LOW);
 }
 
+//funkcia na blinknutie s viacerimi LEDmi
 void blinkWithLeds(int *leds, int ledsCount)
 {
     for (int i = 0; i < ledsCount; i++) digitalWrite(leds[i], HIGH);
@@ -14,12 +16,14 @@ void blinkWithLeds(int *leds, int ledsCount)
     for (int i = 0; i < ledsCount; i++) digitalWrite(leds[i], LOW);
 }
 
+//funkcia ktora caka na key 'C'[Clear]
 void waitForKeypress(char key, Keypad keypad)
 {
     key = keypad.getKey(); 
     while (key != 'C') key = keypad.getKey();
 }
 
+//funkcia na vypis loadingu
 void loadingScreen()
 {
     lcd_print_at(0, 0, "Turning on");
@@ -37,6 +41,7 @@ void loadingScreen()
     lcd_clear();
 }
 
+//funkcia na animaciu bodiek po loadingu
 void animateLoadingDots(int row, int startIndex)
 {
     for (int i = 0; i < 3; i++)
@@ -57,6 +62,7 @@ void animateLoadingDots(int row, int startIndex)
     lcd_print_at(row, startIndex + 1, "...");
 }
 
+//funkcia na vypis vyrazu a vysledku z historie podla indexu
 void showHistoryElementBasedOnIndex(char **expressionHistory, char **resultHistory, int index)
 {
     lcd_print_at(0, 0, expressionHistory[index]);
@@ -71,6 +77,7 @@ void showHistoryElementBasedOnIndex(char **expressionHistory, char **resultHisto
     }
 }
 
+//funkcia na blinknutie LED pri vypise vysledku
 void FinisherBlinking(int *leds, int ledsCount)
 {
     for (int i = 0; i < ledsCount; i++)
@@ -92,6 +99,7 @@ void FinisherBlinking(int *leds, int ledsCount)
     }
 }
 
+//funkcia na blinknutie LED v pripade syntax erroru
 void syntaxErrorBlinking(int *leds, int ledsCount)
 {
     for (int i = 0; i < ledsCount; i++)
