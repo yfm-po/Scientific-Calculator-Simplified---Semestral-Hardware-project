@@ -3,23 +3,30 @@
 #include "lcd.h"
 #include "syntaxErrorHandler.h"
 
+//makra vyuzite v programe
 #define MAX_EXPR_LEN 16
 #define HISTORY_SIZE 10
 
+//makra vyuzite na piny
 #define CHANGE_MODE 3
 #define CHANGE_MODE_LED 12
 #define LEFT_PARENTHESES_LED 2
 #define RIGHT_PARENTHESES_LED 13
 
+//makra vyuzite na zobrazenie na LCD
 #define TOINT(char) (char - '0')
 #define CURSOR_POINTER "^"
 
+//deklaracia historyIndexu a pole na ulozenie vyrazov a vysledkov
 int historyIndex;
 char** expressionHistory = (char **) calloc(HISTORY_SIZE, sizeof(char*));
 char** resultHistory = (char **) calloc(HISTORY_SIZE, sizeof(char*));
 
+//pole na makra lediek
 int leds[] = { RIGHT_PARENTHESES_LED, LEFT_PARENTHESES_LED, CHANGE_MODE_LED };
 
+
+//deklaracie na vyuzitie keypadu
 const byte ROWS = 4;
 const byte COLS = 4;
 
@@ -35,6 +42,7 @@ byte colPins[COLS] = {7, 6, 5, 4};
 
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
+//funkcia setup na inicializacie pinov a poli, zobrazenie uvodnej spravy na LCD
 void setup()
 {
     lcd_init();
@@ -56,17 +64,23 @@ void setup()
     loadingScreen();
 }
 
+//funkcia loop na hlavnu slucku kalkulacky
 void loop() 
 {
+    //deklaracia stringov na elementy vyrazov, a na index vyrazu aby sme vedeli zobrazit index na LCD
     char *expression = (char *) calloc(MAX_EXPR_LEN, sizeof(char));
     char *result = (char *) calloc(MAX_EXPR_LEN, sizeof(char));
     char *historyIndexChar = (char *) calloc(1, sizeof(char));
+
+    //vypisanie cursoru na LCD
     lcd_print_at(1, 0, CURSOR_POINTER);
 
+    //hlavna slucka na kalkulacie
     char key = keypad.getKey();
     int i = 0;
     while (key != '=' && i < MAX_EXPR_LEN)
     {
+        //kombinacie s CHANGE_MODE/shift button
         if (digitalRead(CHANGE_MODE) == HIGH)
         {
             digitalWrite(CHANGE_MODE_LED, HIGH);
@@ -172,6 +186,7 @@ void loop()
             }
             digitalWrite(CHANGE_MODE_LED, LOW);
         }
+        //vymazanie posledneho karakteru a posun naspat o 1
         else if (key == 'C') 
         {
             if (i > 0) 
@@ -184,6 +199,7 @@ void loop()
                 tone(BUZZER, 5000, 100);
             }
         } 
+        //pridavanie cisel alebo operacii
         else if (key != NO_KEY && key != 'C')
         {
             expression[i] = key;
@@ -196,10 +212,13 @@ void loop()
         key = keypad.getKey();
     }
 
+    //vykonanie kalkulacie
     float resultNumber = Evaulate(expression);
     
+    //konverzia vysledku na string aby sme ho mohli vypisat na LCD
     dtostrf(resultNumber, 0, 2, result);
 
+    //kopirovanie vysledku, pripadne Syntax erroru do historie
     if (expression != NULL && strcmp(expression, "") && result != NULL && strcmp(result, ""))
     {
         if (!hasSyntaxError(expression))
@@ -215,6 +234,7 @@ void loop()
         historyIndex++;
     }
     
+    //Vypis syntax erroru alebo vysledku na LCD
     if (hasSyntaxError(expression))
     {
         syntaxError();
@@ -233,14 +253,17 @@ void loop()
         lcd_clear();
     }
     
+    //uvolnenie pamate
     free(expression);
     free(result);
     lcd_clear();
 }
 
 
+//funkcia na minihru, ktora sa vola Bomb Defuse Game
 void bombDefuseGame()
 {
+    //Vypis uvodnej spravy
     lcd_clear();
     lcd_print_at(0, 0, "Well, this is");
     lcd_print_at(1, 0, "not just a");
@@ -262,6 +285,7 @@ void bombDefuseGame()
     delay(1000);
     lcd_clear();
 
+    //alokovanie pamate pre nahodne vygenerovany kod, vstup, a string na cas
     char* code = calloc(4, sizeof(char));
     for (int i = 0; i < 4; i++) code[i] = '\0';
 
@@ -273,20 +297,24 @@ void bombDefuseGame()
 
     char defKey;
 
+    //generovanie nahodneho kodu
     for (int i = 0; i < 4; i++) code[i] = (char)(random(0, 9) + '0');
     code[4] = '\0';
     
     Serial.println(code);
 
+    //inicializacia inputu
     strcpy(input, "****");
     Serial.println(input);
 
     int guessIndex = 0;
     int countDelay = 1000;
 
+    //hlavna slucka minihry
     int i;
     for (i = 60; i >= 0; i--)
     {
+        //v pripade nezadania kodu v case, vypis spravy o prehre
         if (i == 1)
         {
             lcd_clear();
@@ -305,6 +333,7 @@ void bombDefuseGame()
         lcd_print_at(0, 8, input);
         lcd_print_at(1, 0, "Time left: ");
 
+        //vypis casu
         if (i >= 10) lcd_print_at(1, 11, itoa(i, timeLeft, 10));
         else
         {
@@ -318,6 +347,8 @@ void bombDefuseGame()
         countDelay -= 16.66;
         digitalWrite(CHANGE_MODE_LED, LOW);
 
+
+        //nacitanie stlacenej klavesy
         defKey = keypad.getKey();
         if (defKey != NO_KEY && (TOINT(defKey) >= 0 && TOINT(defKey) <= 9))
         {
@@ -329,6 +360,7 @@ void bombDefuseGame()
             tone(BUZZER, 5000, 100);
         }
 
+        //v pripade, ze je kod zadany, vypis spravy o vyhre, pripadne o prehre
         if (guessIndex == strlen(code))
         {
             lcd_clear();
@@ -371,6 +403,8 @@ void bombDefuseGame()
     tone(BUZZER, 5000, 2000);
     delay(1000);
     lcd_clear();
+
+    //uvolnenie pamate
     free(code);
     free(input);
     free(timeLeft);
