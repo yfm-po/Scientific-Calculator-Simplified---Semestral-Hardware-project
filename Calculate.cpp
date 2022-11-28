@@ -1,10 +1,12 @@
 #include "Calculate.h"
 
+//funkcia vrati ci je hocijaky blank character vo vyraze
 int isBlank(char c)
 {
     return (c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r' || c == ' ');
 }
 
+//funkcia na vratenie cisla z ASCII tabulky
 float cursorMover(char **str) 
 {
     float result = 0, sign = 1;
@@ -30,6 +32,7 @@ float cursorMover(char **str)
     return (float)(result * sign);
 }
 
+//funkcia odstrani vsetky blank characters
 void removeSpaces(char * in , char * out) 
 {
     char *cursor = out;
@@ -43,9 +46,10 @@ void removeSpaces(char * in , char * out)
         }
         in++;
     }
-    * cursor = '\0';
+    *cursor = '\0';
 }
 
+//funkcia na parsovanie otvorenej zatvorky
 float parsePart(char **str)
 {
     float out;
@@ -62,6 +66,7 @@ float parsePart(char **str)
     return (float)out;
 }
 
+//funkcia na parsovanie nasobenia a delenia
 float parseFactor(char **str) 
 {
     float fac1;
@@ -80,6 +85,7 @@ float parseFactor(char **str)
     return fac1;
 }
 
+//funkcia na parsovanie scitania a odcitania
 float parseSum(char ** str) 
 {
     float pro1;
@@ -98,6 +104,7 @@ float parseSum(char ** str)
     return (float)pro1;
 }
 
+//funkcia na parsovanie celeho vyrazu
 float Evaulate(char * str) 
 {
     char *out;
