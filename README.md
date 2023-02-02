@@ -64,4 +64,4 @@ To use the calculator, follow these steps:
 - [Khonsu](https://github.com/yfm-po)
 
 ## Introductional video
-[![Introductional video](https://www.youtube.com/watch?v=sny6hM6Z9BU&list=LL&index=3&t=28s)
+![Introductional video](https://www.youtube.com/watch?v=sny6hM6Z9BU&list=LL&index=3&t=28s)
