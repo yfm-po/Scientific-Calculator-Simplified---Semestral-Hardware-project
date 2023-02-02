@@ -57,7 +57,7 @@ To use the calculator, follow these steps:
 9. Press the "C" button to exit the bomb defuse game
 
 ## Contributors
-- [Renkoo][(https://github.com/Renkooo)
+- [Renkoo](https://github.com/Renkooo)
 - [Drascoll](https://github.com/SebastianOndrus)
 - [Strepto](https://github.com/StreptoBordos)
 - [xezrunner](https://github.com/xezrunner)
